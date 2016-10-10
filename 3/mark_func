@@ -1,0 +1,7 @@
+<?php
+    function genConfig($content)
+    {
+        return file_put_contents(getcwd().'/mark.json',
+            '{'.$content.'}')
+        .' of bytes is written.'.PHP_EOL.'mark config is created.';
+    }

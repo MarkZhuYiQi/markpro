@@ -1,0 +1,29 @@
+#!/usr/local/php/bin/php
+<?php
+	$func=substr(PHP_VERSION,0,1)>=7?'mark_func7':'mark_func';
+	require '/usr/local/php/bin/'.$func;
+	require 'markinit.php';
+	$result='';
+	if($argc>=2)
+	{
+        $p=$argv[1];                //gain parameter
+        if(substr($p,0,1)=='-')     //represents variable
+        {
+            //-v ->> v
+            $p=substr($p,1);
+            $result=isset(markinit::$$p)?markinit::$$p:'error';
+        }
+        else                       //represents run function
+        {
+            $result=markinit::$p();
+            if($p=='init')
+            {
+                $result=genconfig($result);
+            }
+        }
+/*		'-v'==$argv[1] && $result=markinit::$VERSION;
+        'make'==$argv[1] && $result=markinit::make();
+		'init'==$argv[1] && $result=genConfig(markinit::init());*/
+
+	}
+	echo $result.PHP_EOL;

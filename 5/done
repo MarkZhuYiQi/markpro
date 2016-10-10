@@ -1,0 +1,1 @@
+echo red | sudo -S /bin/bash -c 'cp mark* /usr/local/php/bin'

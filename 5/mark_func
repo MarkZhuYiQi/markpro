@@ -1,0 +1,11 @@
+<?php
+    function genConfig($content)
+    {
+        return file_put_contents(getcwd().'/mark.json',
+            '{"name":"'.$content->prj_name.'","author":"'.$content->prj_author.'"}')
+        .' of bytes is written.'.PHP_EOL.'mark config is created.';
+    }
+    //把传过来的数组转换成对象
+    function TC2($p){
+        return (object)$p;
+    }
