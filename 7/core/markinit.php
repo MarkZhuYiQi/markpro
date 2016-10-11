@@ -5,9 +5,22 @@
  * Date: 10/10/16
  * Time: 2:11 PM
  */
+namespace core;
+
+use core\frame\mark_frame;
 define('CSTRING','json');
-require 'markconfig.php';
+//require 'markconfig.php';
 define('SPACE',['\r','\n','\r\n']);     //php7新特性，支持定义常量数组
+
+function __autoload($className)
+{
+    $className=str_replace('\\','/',$className);
+    if(file_exists(getcwd().'/'.$className.'.php'))
+    {
+        require(getcwd().'/'.$className.'.php');
+    }
+}
+
 class markinit
 {
     static $v = 'mark version is 1.2';
@@ -42,18 +55,9 @@ class markinit
     static function start()
     {
         if (!file_exists('mark.json')) return 'Error! json file does not exist!';
-        if (is_object($obj = loadConfig())) {
-            !(file_exists(getcwd().'/'.$obj->prj_name)&&is_dir(getcwd().'/'.$obj->prj_name)) && mkdir(getcwd() . '/' . $obj->prj_name, 0777);
-            !file_exists(getcwd().'/'.$obj->prj_name.'/index.php') && file_put_contents(getcwd().'/'.$obj->prj_name.'/index.php', '<?php'.PHP_EOL.'//project name:'.$obj->prj_name.PHP_EOL.'//project author:'.$obj->prj_author.PHP_EOL);
-//            if (!is_dir($obj->prj_name)) {
-//                mkdir(getcwd() . '/' . $obj->prj_name, 0777);
-//            }else{
-//                return 'Error! '.$obj->prj_name.' dir already exists!';
-//            }
-//            if(file_exists(getcwd().'/'.$obj->prj_name.'/index.php'))return 'Error! index.php already exists!';
-//            file_put_contents(getcwd().'/'.$obj->prj_name.'/index.php',
-//                '<?php'.PHP_EOL.'//project name:'.$obj->prj_name.PHP_EOL.'//project author:'.$obj->prj_author.PHP_EOL);
-            return 'dir catallog has been established!';
+        if (is_object($get_config = loadConfig())) {
+            $mf=new mark_frame($get_config->prj_name);
+            return $mf->run();
         }else{
             return 'Error!data unknown!';
         }
