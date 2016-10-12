@@ -18,3 +18,29 @@
         }
         return $getClass;
     }
+    function TC2($p)
+    {
+        return (object)$p;
+    }
+    function TC3($p)
+    {
+        return new class($p)
+        {
+            function __construct($p)
+            {
+                foreach($p as $key => $value)
+                {
+                    $this->$key=$value;
+                }
+            }
+            function __toString()
+            {
+                // TODO: Implement __toString() method.
+                if(!defined(CSTRING))return json_encode($this);
+                if(CSTRING=='json')
+                {
+                    return json_encode($this);
+                }
+            }
+        };
+    }
