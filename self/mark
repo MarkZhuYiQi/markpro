@@ -1,0 +1,31 @@
+#!/usr/local/php/bin/php
+<?php
+    use core\markInit;
+    $func=substr(PHP_VERSION,0,1)>=7?'mark_func7':'mark_func';
+    define('SPACE',['\r','\n','\r\n']);
+    define('CSTRING','json');
+    require(getcwd().'/'.$func);
+    function __autoload($className)
+    {
+        $className=str_replace('\\','/',$className);
+        if(file_exists(getcwd().'/'.$className.'.php'))
+        {
+            require(getcwd().'/'.$className.'.php');
+        }
+    }
+    $p=$argv[1];
+    if($argc>=2) {
+        if (substr($p, 0, 1) == '-')
+        {
+            $result=isset(markInit::$$p)?markInit::$$p:'error!variable does not exist';
+        }
+        else
+        {
+            $result=markInit::$p();
+            if($p=='init')
+            {
+                $result=genConfig($result);
+            }
+        }
+    }
+    echo $result.PHP_EOL;
