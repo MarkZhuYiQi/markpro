@@ -1,0 +1,20 @@
+<?php
+    function genConfig($content):string
+    {
+        $content=str_replace(SPACE,'',$content);
+        return file_put_contents(getcwd().'/mark.json',$content).' bytes written';
+    }
+    function loadConfig()
+    {
+        $json=file_get_contents(getcwd().'/mark.json');
+        return json_decode($json);
+    }
+    function TC1($p):stdClass
+    {
+        $getClass=new stdClass();
+        foreach($p as $key=>$value)
+        {
+            $getClass->$key=$value;
+        }
+        return $getClass;
+    }

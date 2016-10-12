@@ -11,7 +11,8 @@
     function TC1($p)
     {
         $get_class=new stdClass();
-        foreach($p as $key=>$value){
+        foreach($p as $key=>$value)
+        {
             $get_class->$key=$value;
         }
         return $get_class;

@@ -1,0 +1,11 @@
+<?php
+    function genConfig($content){
+        return file_put_contents(getcwd().'/mark.json',$content).' bytes written';
+    }
+    function TC1($p){
+        $getClass=new stdClass();
+        foreach($p as $key=>$value){
+            $getClass->$key=$value;
+        }
+        return $getClass;
+    }

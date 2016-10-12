@@ -12,7 +12,7 @@ define('CSTRING','json');
 //require 'markconfig.php';
 define('SPACE',['\r','\n','\r\n']);     //php7新特性，支持定义常量数组
 
-function __autoload($className)
+function __autoload($className) 
 {
     $className=str_replace('\\','/',$className);
     if(file_exists(getcwd().'/'.$className.'.php'))
