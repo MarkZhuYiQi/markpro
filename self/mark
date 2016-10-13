@@ -21,6 +21,7 @@
         }
         else
         {
+//            exit(markInit::$p());
             $result=markInit::$p();
             if($p=='init')
             {
