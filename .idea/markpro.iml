@@ -16,6 +16,7 @@
           <root url="phar://$MODULE_DIR$/9/mark.phar/" />
           <root url="phar://$MODULE_DIR$/10/mark.phar/" />
           <root url="phar://$MODULE_DIR$/11/mark.phar/" />
+          <root url="phar://$MODULE_DIR$/12/mark.phar/" />
         </CLASSES>
         <SOURCES>
           <root url="phar://$MODULE_DIR$/6/mark.phar/" />
@@ -27,6 +28,7 @@
           <root url="phar://$MODULE_DIR$/9/mark.phar/" />
           <root url="phar://$MODULE_DIR$/10/mark.phar/" />
           <root url="phar://$MODULE_DIR$/11/mark.phar/" />
+          <root url="phar://$MODULE_DIR$/12/mark.phar/" />
         </SOURCES>
       </library>
     </orderEntry>

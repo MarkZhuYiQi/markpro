@@ -40,23 +40,19 @@ class mark_frame
         $result='<?php '.PHP_EOL.'extract('.var_export(get_defined_vars(),true).');';
         file_put_contents($this->project_folder.'/vars.php',$result);
 
-
-        $getFunc=(get_defined_functions()['user']);
         $func_res='<?php'.PHP_EOL;
-        foreach($getFunc as $key =>$_func)
+        $getFunc=array();
+        foreach(get_defined_functions()['user'] as $key=>$_func)
         {
-            if($key<6)
+            if($key>=6)
             {
-                unset($getFunc[$key]);
-            }
-            else
-            {
-                $f=new \ReflectionFunction($_func);
-                $detail=file($f->getFileName());
-                $detail=implode(array_slice($detail,$f->getStartLine()-1,$f->getEndLine()-$f->getStartLine()+1));
-                $func_res.=$detail;
+                $getFunc[$key]=$_func;
+                $ref=new \ReflectionFunction($_func);
+                $detail=file($ref->getFileName());
+                $detail=implode(array_slice($detail,$ref->getStartLine()-1,$ref->getEndLine()-$ref->getStartLine()+1));
+                $func_res.=$detail.PHP_EOL;
             }
         }
-        file_put_contents($this->project_folder.'/func.php',$func_res);
+        file_put_contents($this->project_folder.'/functions.php',$func_res);
     }
 }

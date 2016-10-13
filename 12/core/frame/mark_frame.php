@@ -25,7 +25,7 @@ class mark_frame
         ob_end_clean();
         !file_exists($this->project_main) && file_put_contents($this->project_main,$cnt);
         echo 'PHP Server has started!'.PHP_EOL;
-        system('/usr/local/php/bin/php -S localhost:8081 -t /home/red/test/markpro/9/zhu');
+        system('/usr/local/php/bin/php -S localhost:8081 -t '.getcwd().'/zhu');
         return 'dir catallog has been established!';
     }
     function compile()
