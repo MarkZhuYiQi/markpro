@@ -24,6 +24,8 @@ class mark_frame
         $content=ob_get_contents();
         ob_end_clean();
         !file_exists($this->project_main) && file_put_contents($this->project_main,$content);
+        echo 'PHP SERVER started!'.PHP_EOL;
+        system('/usr/local/php/bin/php -S localhost:8081 -t '.getcwd().'/zhu');
     }
     function complie()
     {
