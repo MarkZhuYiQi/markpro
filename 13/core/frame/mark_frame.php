@@ -1,0 +1,82 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: red
+ * Date: 10/11/16
+ * Time: 2:22 PM
+ */
+namespace core\frame;
+use core\frame\mark_mvc;
+class mark_frame
+{
+    public $project_folder='';      //项目文件夹
+    public $project_main='';        //入口文件
+    function __construct($prjName)
+    {
+        $this->project_folder=getcwd().'/'.$prjName;
+        $this->project_main=$this->project_folder.'/index.php';
+    }
+    function run()
+    {
+        !(file_exists($this->project_folder)&&is_dir($this->project_folder)) && mkdir($this->project_folder, 0777);
+        extract(get_object_vars($this));
+        ob_start();
+        include(dirname(__FILE__).'/template/index.tpl');
+        $cnt=ob_get_contents();
+        ob_end_clean();
+        !file_exists($this->project_main) && file_put_contents($this->project_main,$cnt);
+        echo 'PHP Server has started!'.PHP_EOL;
+        system('/usr/local/php/bin/php -S localhost:8081 -t '.getcwd().'/zhu');
+        return 'dir catallog has been established!';
+    }
+    function compile()
+    {
+        //扫描出code下的所有文件，然后匹配出需要的文件
+        $_files = scandir($this->project_folder . '/code');
+        foreach ($_files as $_file) {
+            if (preg_match("/[\w]+\.(var|func|class)\.php$/i", $_file)) {
+                //全部变量引入后，重复变量将自动只保留最后一个。
+                require($this->project_folder . '/code/' . $_file);
+                unset($_file);
+            }
+        }
+        unset($_files);
+        //------------------------------------------------------------------------------------------------
+        //将所有变量输出到文件中
+        $result = '<?php ' . PHP_EOL . '//Complied by mark' . PHP_EOL . '//Date:' . date('Y-m-d H:i:s') . PHP_EOL
+            . 'extract(' . var_export(get_defined_vars(), 1) . ');';
+        file_put_contents($this->project_folder . '/vars.php', $result);
+        //------------------------------------------------------------------------------------------------
+        //创建函数字符串等待写入func.php集合function
+        $func_res = '<?php' . PHP_EOL;
+        $func_res .= '//Complied by mark' . PHP_EOL . '//Date:' . date('Y-m-d H:i:s') . PHP_EOL;
+        //获取用户自己的函数
+        $getfunc = (get_defined_functions()['user']);
+        //去除不需要的函数
+        foreach ($getfunc as $key => $_func) {
+            if ($key > 6) {
+                $f = new \ReflectionFunction($_func);
+                $detail = file($f->getFileName());
+                $detail = implode(array_slice($detail, $f->getStartLine() - 1, $f->getEndLine() - $f->getStartLine() + 1));
+                $func_res .= $detail . PHP_EOL;
+            }
+        }
+        file_put_contents($this->project_folder . '/functions.php', $func_res);
+        //------------------------------------------------------------------------------------------------
+        //获取已经加载的所有类
+        $getClass = get_declared_classes();
+        $class=array_slice($getClass,array_search(__CLASS__,$getClass)+1);  //这里要做防错
+        $result=array();
+        foreach($class as $_class)
+        {
+            $mvc=new mark_mvc($_class);
+            if($mvc->isController())
+            {
+                $tempArr=$mvc->getRequestMapping();
+                $result=array_merge($result,$tempArr);
+            }
+        }
+        //生成路由文件
+        file_put_contents($this->project_folder.'/request_route','<?php'.PHP_EOL.'return '.var_export($result,true).';');
+    }
+}
