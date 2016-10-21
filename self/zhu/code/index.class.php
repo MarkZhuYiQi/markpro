@@ -13,8 +13,19 @@
  */
 class index
 {
+    /**
+     * @RequestMapping("/getInfo",Method=GET)
+     */
     function default()
     {
         echo "i am mark, 26 years old, but i am still a loser";
+    }
+
+    /**
+     * @RequestMapping("/getabc",Method=POST)
+     */
+    function abc()
+    {
+        echo 'abc';
     }
 }

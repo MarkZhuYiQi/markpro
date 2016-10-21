@@ -1,0 +1,14 @@
+<?php return array (
+  '/getInfo' => 
+  array (
+    'RequestMethod' => 'GET',
+    'class' => 'index',
+    'Method' => 'default',
+  ),
+  '/getabc' => 
+  array (
+    'RequestMethod' => 'POST',
+    'class' => 'index',
+    'Method' => 'abc',
+  ),
+);

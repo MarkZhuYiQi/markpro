@@ -51,7 +51,7 @@ class markInit
             return 'config file does not exist!';
         }
     }
-    static function C()
+    static function c()
     {
         $get_config=loadConfig();
         $mf=new mark_frame($get_config->prj_name);
