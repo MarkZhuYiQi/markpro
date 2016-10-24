@@ -4,13 +4,32 @@
  * project author:test
  * Date:2016-10-21 01:47:26
  */
+require('vars.php');
+require('functions.php');
+
+$pi=isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:false;
+if(!$pi)exit(404);
 $route=require('request_route');
-if($pathInfo=$_SERVER['PATH_INFO'])
+var_export($route);
+if(array_key_exists($pi,$route))
 {
-    require('code/'.$route[$pathInfo]['class'].'.class.php');
-    $controller=new $route[$pathInfo]['class'];
-    $action=$route[$pathInfo]['Method'];
-    $controller->$action();
+    $route_obj=$route[$pi];
+    if($route_obj['RequestMethod']==$_SERVER['REQUEST_METHOD'])
+    {
+        $className=$route['Class'];
+        $method=$route_obj['Method'];
+        require('code/'.$className.'.class.php');
+        $class_obj=new $className();
+        $class_obj->$method();
+    }
+    else
+    {
+        exit('not allowed!405');
+    }
 }
+
+
+
+
 
 
