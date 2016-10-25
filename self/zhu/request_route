@@ -1,5 +1,5 @@
 <?php return array (
-  '/getInfo' => 
+  '/getInfo/(?<name>\\w{2,10})/(?<age>\\d+)$' => 
   array (
     'RequestMethod' => 'GET',
     'class' => 'index',

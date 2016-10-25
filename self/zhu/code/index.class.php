@@ -14,11 +14,11 @@
 class index
 {
     /**
-     * @RequestMapping("/getInfo",Method=GET)
+     * @RequestMapping("/getInfo/(?<name>\w{2,10})/(?<age>\d+)$",Method=GET)
      */
-    function default()
+    function default($name,$age)
     {
-        echo "i am mark, 26 years old, but i am still a loser";
+        echo "i am ".$name.", ".$age." years old, but i am still a loser";
     }
 
     /**

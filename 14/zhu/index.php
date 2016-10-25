@@ -13,11 +13,17 @@ if(!$pi)exit(404);
 $route=require('request_route');
 //if(array_key_exists($pi,$route))
 //{
+
+function getMatch($v)
+{
+    return preg_match('/[a-zA-Z]+/',$v);
+}
+
     $route_keys=array_keys($route);
     foreach($route_keys as $key)
     {
         $new_key=str_replace('/','\/',$key);
-        if(preg_match('/'.$new_key.'/',$pi))
+        if(preg_match('/'.$new_key.'/',$pi,$result))
         {
             $route_obj=$route[$key];
             if($route_obj['RequestMethod']==$_SERVER['REQUEST_METHOD'])
@@ -25,9 +31,18 @@ $route=require('request_route');
                 $className=$route_obj['Class'];
                 $method=$route_obj['Method'];
                 require('code/'.$className.'.class.php');
-                $class_obj=new $className();
-                $class_obj->$method();
-                exit;
+
+                $param=array_filter($result,'getMatch',ARRAY_FILTER_USE_KEY);
+                $class_obj=new ReflectionClass($className);
+                $getMethod=$class_obj->getMethod($method);
+                if($param && count($param) >0)
+                {
+                    $getMethod->invokeArgs($class_obj->newInstance(),$param);
+                }
+                else
+                {
+                    $getMethod->invoke($class_obj->newInstance());
+                }
             }
             else
             {

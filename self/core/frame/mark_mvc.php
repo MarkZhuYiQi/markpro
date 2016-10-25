@@ -37,8 +37,7 @@ class mark_mvc
     }
     function genRequestMappingResult($method)
     {
-        //@RequestMapping("/getInfo",Method=GET)
-        if(preg_match("/@RequestMapping\(\"(?<RequestUrl>[\/A-Za-z]{2,50})\",Method=(?<RequestMethod>[\w]{2,50})\)/",$method->getDocComment(),$result))
+        if(preg_match("/@RequestMapping\(\"(?<RequestUrl>.{2,50})\",Method=(?<RequestMethod>[\w]{2,50})\)/",$method->getDocComment(),$result))
         {
             return array(
                 $result['RequestUrl']=>array(
