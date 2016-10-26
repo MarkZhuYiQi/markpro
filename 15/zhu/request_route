@@ -1,10 +1,10 @@
 <?php
 return array (
-  '/login$' => 
+  '/getme/(?<name>\\w{2,10})/(?<age>\\d+)$' => 
   array (
     'RequestMethod' => 'GET',
     'Class' => 'index',
-    'Method' => 'user_login',
+    'Method' => 'default',
   ),
   '/getage' => 
   array (

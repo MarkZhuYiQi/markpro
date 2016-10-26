@@ -14,12 +14,12 @@
 class index
 {
     /**
-     * @RequestMapping("/getme/(?<name>\w{2,10})/(?<age>\d+)$",Method=GET);
+     * @RequestMapping("/login$",Method=GET);
      */
-    function default($name,$age){
-        echo 'hello,'.$name.PHP_EOL;
-        echo '<hr />';
-        echo 'my age is '.$age;
+    function user_login($display){
+        $vars['login']='success';
+        $vars['method']='displayVars';
+        $display('login',$vars);
     }
 
     /**

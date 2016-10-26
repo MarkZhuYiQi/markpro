@@ -5,15 +5,8 @@
  * Date:2016-10-11 09:38:53
  */
 
+require('vars.php');
 require('functions.php');
-
-$display=function($tpl='',$vars=array()){        //模板加载函数
-    extract($vars);
-    require('vars.php');
-    if($tpl!='')include('page/'.$tpl.'.html');
-};
-
-
 
 $pi=isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:false;
 if(!$pi)exit(404);
@@ -34,17 +27,14 @@ foreach($route_keys as $key)
             $param=array_filter($result,'getMatch',ARRAY_FILTER_USE_KEY);
             $class_obj=new ReflectionClass($className);
             $getMethod=$class_obj->getMethod($method);
-
-            $param['display']=$display;
-            $class_obj_instance=$class_obj->newInstance();  //实例化对象
-//            if($param && count($param) >0)
-//            {
-                $getMethod->invokeArgs($class_obj_instance,$param);
-//            }
-//            else
-//            {
-//                $getMethod->invoke($class_obj->newInstance());
-//            }
+            if($param && count($param) >0)
+            {
+                $getMethod->invokeArgs($class_obj->newInstance(),$param);
+            }
+            else
+            {
+                $getMethod->invoke($class_obj->newInstance());
+            }
         }
         else
         {
