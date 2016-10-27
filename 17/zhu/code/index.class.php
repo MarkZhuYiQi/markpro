@@ -14,6 +14,13 @@
 class index
 {
     /**
+     * @RequestMapping("",Method=GET);
+     */
+    function default()
+    {
+
+    }
+    /**
      * @RequestMapping("/login$",Method=GET);
      */
     function user_login($display){

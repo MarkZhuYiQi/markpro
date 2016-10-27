@@ -27,16 +27,24 @@ function poster($req_method,&$param,$method){
          }
     }
 }
-function existParam($method,$param)
+
+/**
+ * @param $method       所请求的方法对象
+ * @param $key          post请求的键
+ * @return bool
+ * 我日你妈卖批的这个return false 写在循环里面会导致第一次循环就结束循环，必须特么的仍在外面。我日，还是太嫩了！2016年10月27日
+ */
+function existParam($method,$key)
 {
-    foreach($method->getParameters() as $paramter)   //获取反射方法
+//    var_export($key);
+    foreach($method->getParameters() as $parameter)   //获取反射方法
     {
-        if($paramter->name==$param)
+        if($parameter->name==$key)
         {
             return true;
         }
-        return false;
     }
+    return false;
 }
 
 $pi=isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:false;
@@ -49,16 +57,14 @@ foreach($route_keys as $key)
     if(preg_match('/'.$new_key.'/',$pi,$result))
     {
         $route_obj=$route[$key];
-        if($route_obj['RequestMethod']==$_SERVER['REQUEST_METHOD'])
+        if($route_obj['RequestMethod']==$_SERVER['REQUEST_METHOD'])     //判断请求方法是否正确
         {
             $className=$route_obj['Class'];
             $method=$route_obj['Method'];
             require('code/'.$className.'.class.php');
-
-            $param=array_filter($result,'getMatch',ARRAY_FILTER_USE_KEY);
-            $class_obj=new ReflectionClass($className);
+            $param=array_filter($result,'getMatch',ARRAY_FILTER_USE_KEY);   //根据回调函数筛选匹配数组内容
+            $class_obj=new ReflectionClass($className);     //实例化反射出来的类
             $getMethod=$class_obj->getMethod($method);      //获得需要调用的反射类下的对应方法
-
             poster($_SERVER['REQUEST_METHOD'],$param,$getMethod);  //把请求的变量都存进这个数组,还要判断方法内是否要取这个值
             $param['display']=$display;
             $class_obj_instance=$class_obj->newInstance();      //实例化对象
