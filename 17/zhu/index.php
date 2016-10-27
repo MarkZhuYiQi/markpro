@@ -13,7 +13,31 @@ $display=function($tpl='',$vars=array()){        //模板加载函数
     if($tpl!='')include('page/'.$tpl.'.html');
 };
 
-
+/**
+ * @param $req_method   请求方式，分为GET和POST
+ * @param $param        传入模板的数组，这里按值传递
+ */
+function poster($req_method,&$param,$method){
+    if($req_method=='POST'){
+         foreach($_POST as $k => $v){
+            if(existParam($method,$k))           //如果这个方法请求这个参数，我们就传递，否则不传
+            {
+                $param[$k]=$v;
+            }
+         }
+    }
+}
+function existParam($method,$param)
+{
+    foreach($method->getParameters() as $paramter)   //获取反射方法
+    {
+        if($paramter->name==$param)
+        {
+            return true;
+        }
+        return false;
+    }
+}
 
 $pi=isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:false;
 if(!$pi)exit(404);
@@ -33,18 +57,12 @@ foreach($route_keys as $key)
 
             $param=array_filter($result,'getMatch',ARRAY_FILTER_USE_KEY);
             $class_obj=new ReflectionClass($className);
-            $getMethod=$class_obj->getMethod($method);
+            $getMethod=$class_obj->getMethod($method);      //获得需要调用的反射类下的对应方法
 
+            poster($_SERVER['REQUEST_METHOD'],$param,$getMethod);  //把请求的变量都存进这个数组,还要判断方法内是否要取这个值
             $param['display']=$display;
-            $class_obj_instance=$class_obj->newInstance();  //实例化对象
-//            if($param && count($param) >0)
-//            {
-                $getMethod->invokeArgs($class_obj_instance,$param);
-//            }
-//            else
-//            {
-//                $getMethod->invoke($class_obj->newInstance());
-//            }
+            $class_obj_instance=$class_obj->newInstance();      //实例化对象
+            $getMethod->invokeArgs($class_obj_instance,$param); //这个方法的参数以数组的方式传递
         }
         else
         {

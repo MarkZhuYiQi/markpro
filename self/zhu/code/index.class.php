@@ -14,11 +14,12 @@
 class index
 {
     /**
-     * @RequestMapping("/getInfo/(?<name>\w{2,10})/(?<age>\d+)$",Method=GET)
+     * @RequestMapping("/login$",Method=GET)
      */
-    function default($name,$age)
+    function user_login($display)
     {
-        echo "i am ".$name.", ".$age." years old, but i am still a loser";
+        $vars['var1']='通过类中设置数组变量，传递给模板函数';
+        $display('login',$vars);
     }
 
     /**

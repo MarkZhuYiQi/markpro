@@ -1,14 +1,15 @@
-<?php return array (
+<?php
+return array (
   '/login$' => 
   array (
     'RequestMethod' => 'GET',
-    'class' => 'index',
+    'Class' => 'index',
     'Method' => 'user_login',
   ),
-  '/getabc' => 
+  '/login_post$' => 
   array (
     'RequestMethod' => 'POST',
-    'class' => 'index',
-    'Method' => 'abc',
+    'Class' => 'index',
+    'Method' => 'user_login_post',
   ),
 );
