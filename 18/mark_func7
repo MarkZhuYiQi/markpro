@@ -1,0 +1,50 @@
+<?php
+    function genConfig($content):string
+    {
+//        return file_put_contents(getcwd().'/mark.json',
+//            '{"name":"'.$content->prj_name.'","author":"'.$content->prj_author.'"}')
+//        .' of bytes is written.'.PHP_EOL.'mark config is created.';
+        $content=str_replace(SPACE,'',$content);
+        return file_put_contents(getcwd().'/mark.json', $content)
+        .' of bytes is written.'.PHP_EOL.'mark config is created.';
+    }
+    function loadConfig():stdClass
+    {
+        $get_file=file_get_contents(getcwd().'/mark.json');
+        return json_decode($get_file);
+    }
+
+//作为一个基类库，创建一个临时类用于存放变量
+    function TC1($p)
+    {
+        $get_class=new stdClass();
+        foreach($p as $key=>$value){
+            $get_class->$key=$value;
+        }
+        return $get_class;
+    }
+//把传过来的数组转换成对象
+    function TC2($p){
+        return (object)$p;
+    }
+//使用匿名类，PHP7特性，阅后即焚的特性，没有通用的意义，不需要反复使用
+    function TC3($p){
+        return new class($p){
+            function __construct($p)
+            {
+                foreach($p as $key=>$value)
+                {
+                    $this->$key=$value;
+                }
+            }
+            //将一切返回字符串，这个返回的class会自动被转换成json返回
+            function __tostring()
+            {
+                if(!defined(CSTRING))return json_encode($this);
+                if(CSTRING=='json')
+                {
+                    return json_encode($this);
+                }
+            }
+        };
+    }

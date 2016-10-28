@@ -5,11 +5,16 @@
     <title>Title</title>
 </head>
 <body>
-    this is the login page.
-    <hr />
-    <?php
-        echo 'my name is '.$name.', '.$age.' years old, and i am a '.$sex;
-        echo $var1;
-    ?>
+<form action="/index.php/login_post" method='post'>
+    <div>
+        用户名：<input type="text" name="uname">
+    </div>
+    <div>
+        密码：<input type="password" name="upwd">
+    </div>
+    <div>
+        <input type="submit" name="login" value="login">
+    </div>
+</form>
 </body>
 </html>

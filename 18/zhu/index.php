@@ -19,6 +19,18 @@ $display=function($tpl='',$vars=array()){        //模板加载函数
  */
 function poster($req_method,&$param,$method){
     if($req_method=='POST'){
+        if($_SERVER['CONTENT_TYPE']=='application/json')    //这个值是通过前端的文件头过来的，值是我定的
+        {
+            $getObj=json_decode(file_get_contents("php://input"));
+            foreach($getObj as $key =>$value)
+            {
+                if(existParam($method,$key))
+                {
+                    $param[$key]=$value;
+                }
+            }
+            return;
+        }
          foreach($_POST as $k => $v){
             if(existParam($method,$k))           //如果这个方法请求这个参数，我们就传递，否则不传
             {

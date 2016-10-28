@@ -1,26 +1,21 @@
-<?php return array (
+<?php
+return array (
   '/getme/(?<name>\\w{2,10})/(?<age>\\d+)$' => 
   array (
     'RequestMethod' => 'GET',
-    'class' => 'index',
+    'Class' => 'index',
     'Method' => 'default',
   ),
   '/login$' => 
   array (
     'RequestMethod' => 'GET',
-    'class' => 'index',
+    'Class' => 'index',
     'Method' => 'user_login',
   ),
   '/login_post$' => 
   array (
     'RequestMethod' => 'POST',
-    'class' => 'index',
+    'Class' => 'index',
     'Method' => 'user_login_post',
-  ),
-  '/getabc' => 
-  array (
-    'RequestMethod' => 'POST',
-    'class' => 'index',
-    'Method' => 'abc',
   ),
 );

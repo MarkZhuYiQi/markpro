@@ -13,6 +13,16 @@
  */
 class index
 {
+
+    /**
+     * @RequestMapping("/getme/(?<name>\w{2,10})/(?<age>\d+)$",Method=GET);
+     */
+    function default($name,$age){
+        echo 'hello,'.$name.PHP_EOL;
+        echo '<hr />';
+        echo 'my age is '.$age;
+    }
+    
     /**
      * @RequestMapping("/login$",Method=GET)
      */
@@ -20,6 +30,21 @@ class index
     {
         $vars['var1']='通过类中设置数组变量，传递给模板函数';
         $display('login',$vars);
+    }
+
+    /**
+     * @RequestMapping("/login_post$",Method=POST)
+     */
+    function user_login_post($uname,$display)
+    {
+//        echo readfile('php://input');
+        echo $uname;
+        echo "<hr>";
+//        echo $upwd;
+        echo '<hr>';
+        
+//        $vars['index']='test if the variable transfer to the index html?';
+//        $display('index',$vars);
     }
 
     /**

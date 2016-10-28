@@ -34,6 +34,8 @@ foreach($route_keys as $key)
             $class_obj=new ReflectionClass($className);
             $getMethod=$class_obj->getMethod($classMethod);     //获得反射类中的那个方法
             $class_obj_instance=$class_obj->newInstance();          //实例化反射出来的类
+            geter($_SERVER['REQUEST_METHOD'],$params,$getMethod);
+            poster($_SERVER['REQUEST_METHOD'],$params,$getMethod);   //函数判断如果是post方法，讲post变量都传入数组
             $params['display']=$display;                        //将匿名函数传给数组作为参数
             $getMethod->invokeArgs($class_obj_instance,$params);    //带参数的调用类中的方法
         }else{
@@ -41,9 +43,56 @@ foreach($route_keys as $key)
         }
     }
 }
-
+/**
+ * 用于辅助array_filter(),回调函数
+ * @param $v
+ * @return int
+ */
 function getMatch($v)
 {
     return preg_match('/[a-zA-Z]+/',$v);
 }
 
+/**
+ * 如果get请求传入的变量在类方法中病没有接受，那么就删除这个变量
+ * @param $requestMethod    请求方法
+ * @param $params           get请求获得的变量存入数组$params
+ * @param $method           反射出来的类方法
+ */
+function geter($requestMethod,&$params,$method)
+{
+    if($requestMethod=='GET')
+    {
+        foreach($params as $key => $value)
+        {
+            if(!existParam($method,$key))
+            {
+                unset($params[$key]);
+            }
+        }
+    }
+}
+
+function poster($requestMethod,&$params,$method)
+{
+    if($requestMethod=='POST')
+    {
+        foreach($_POST as $key =>$value)
+        {
+            if(existParam($method,$key))
+            {
+                $params[$key]=$value;
+            }
+        }
+    }
+}
+function existParam($method,$key)
+{
+    foreach($method->getParameters() as $parameter)
+    {
+        if($parameter->name==$key){
+            return true;
+        }
+    }
+    return false;
+}
