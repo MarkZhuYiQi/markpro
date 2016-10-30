@@ -73,19 +73,43 @@ function geter($requestMethod,&$params,$method)
     }
 }
 
+/**
+ * @param $requestMethod        请求的方法类型，有GET和POST
+ * @param $params               取得传入的变量
+ * @param $method               url地址所请求的方法
+ */
 function poster($requestMethod,&$params,$method)
 {
     if($requestMethod=='POST')
     {
-        foreach($_POST as $key =>$value)
+        if($_SERVER['CONTENT_TYPE']=='application/json')
         {
-            if(existParam($method,$key))
+            $getObj=json_decode(file_get_contents("php://input"));
+            foreach($getObj as $key=>$value)
             {
-                $params[$key]=$value;
+                if(existParam($method,$key))
+                {
+                    $params[$key]=$value;
+                }
+            }
+        }
+        else
+        {
+            foreach($_POST as $key =>$value)
+            {
+                if(existParam($method,$key))
+                {
+                    $params[$key]=$value;
+                }
             }
         }
     }
 }
+/**
+ * @param $method   需要请求的方法
+ * @param $key      变量值
+ * @return bool     返回对这个键值是否存在
+ */
 function existParam($method,$key)
 {
     foreach($method->getParameters() as $parameter)

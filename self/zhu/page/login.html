@@ -4,8 +4,37 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<script src="/page/jq.js"></script>
+<script>
+$(document).ready(function(){
+    $('#jqbtn').click(function(){
+        var jsonResult=$('#userForm').serializeArray();
+        var userData={};
+        $.each(jsonResult,function(){
+            userData[this.name]=this.value;
+        });
+//        alert(JSON.stringify(userData));
+        $.ajax({
+            type:"POST",
+            contentType:"application/json",
+            url:"index.php/login_post",
+            data:JSON.stringify(userData),
+            dataType:"json",
+            success:function(result){
+                alert(result.uname);
+            },
+            error:function(response,error){
+                alert(error);
+            }
+        });
+    })
+});
+
+
+
+</script>
 <body>
-<form action="/index.php/login_post" method='post'>
+<form action="/index.php/login_post" method='post' id="userForm">
     <div>
         用户名：<input type="text" name="uname">
     </div>
@@ -16,5 +45,8 @@
         <input type="submit" name="login" value="login">
     </div>
 </form>
+<div>
+    <button id="jqbtn">login(JQuery)</button>
+</div>
 </body>
 </html>

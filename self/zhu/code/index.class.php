@@ -35,13 +35,19 @@ class index
     /**
      * @RequestMapping("/login_post$",Method=POST)
      */
-    function user_login_post($uname,$display)
+    function user_login_post($uname,$upwd,$display)
     {
+        $json=new stdClass();
+        $json->uname=$uname;
+        $json->upwd=$upwd;
+        exit(json_encode($json));
+
+
 //        echo readfile('php://input');
-        echo $uname;
-        echo "<hr>";
+//        echo $uname;
+//        echo "<hr>";
 //        echo $upwd;
-        echo '<hr>';
+//        echo '<hr>';
         
 //        $vars['index']='test if the variable transfer to the index html?';
 //        $display('index',$vars);
