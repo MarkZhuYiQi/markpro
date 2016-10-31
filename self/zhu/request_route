@@ -17,6 +17,12 @@
     'class' => 'index',
     'Method' => 'user_login_post',
   ),
+  '/json_post$' => 
+  array (
+    'RequestMethod' => 'POST',
+    'class' => 'index',
+    'Method' => 'json_post',
+  ),
   '/getabc' => 
   array (
     'RequestMethod' => 'POST',

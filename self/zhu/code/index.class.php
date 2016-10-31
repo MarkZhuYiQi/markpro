@@ -54,6 +54,19 @@ class index
     }
 
     /**
+     * @RequestMapping("/json_post$",Method=POST)
+     */
+    function json_post($uname,$upwd,$display)
+    {
+        $json=new stdClass();
+        $json->uname=$uname;
+        $json->upwd=$upwd;
+        exit($json);
+    }
+
+
+
+    /**
      * @RequestMapping("/getabc",Method=POST)
      */
     function abc()
