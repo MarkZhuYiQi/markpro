@@ -33,7 +33,7 @@ class orm
         foreach($fields as $field)
         {
             //__FUNCTION__返回的是方法的名字 类似select
-            //__METHOD__返回的是类的名字和方法的名字 类似Orm::select
+            //c
             if(trim($this->sql[__FUNCTION__])==__FUNCTION__)
             {
                 $this->sql[__FUNCTION__].=$field;

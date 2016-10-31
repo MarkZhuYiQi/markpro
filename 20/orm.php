@@ -81,6 +81,7 @@ class orm
     }
     function _add($key,$str,$spliter=',')
     {
+        //如果数组中这个键不存在就退出
         if(!$this->sql[$key])return;
         if(is_array($this->sql[$key]))
         {
