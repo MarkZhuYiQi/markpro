@@ -37,10 +37,15 @@ class orm
         "where"=>" where ",
         "orderby"=>" order by ",
         "limit"=>" limit ",
-        "insertinto"=>'insert into',
-        "insertfields"=>" ",
+        "insertinto"=>'insert into ',
+        "insertfields"=>"",
         "values"=>" values"
     );
+    function __construct()
+    {
+        $this->sql_bak=$this->sql;
+    }
+
     function insert()
     {
         $params=func_get_args();        //获得所有参数
@@ -80,6 +85,10 @@ class orm
             {
                 $callback[]=$param;
             }
+        }
+        foreach($callback as $call) //类似于异步，统一执行函数
+        {
+            $call($this);
         }
         return $this;
     }
@@ -172,7 +181,8 @@ class orm
     function _add($key,$str,$spliter=',')
     {
         //如果数组中这个键不存在就退出
-        if(!$this->sql[$key])return;
+//        if(!$this->sql[$key])return;    //这个不行，如果字符串为空就直接退出了，那么insertfields里面永远写不进内容了
+        if(!array_key_exists($key,$this->sql))return;
         if(is_array($this->sql[$key]))
         {
             //如果已经存在该项名（表名），不处理
@@ -232,6 +242,7 @@ class orm
 
         $this->sql=array_filter($this->sql,$filter,ARRAY_FILTER_USE_BOTH);
         $ret = array_map($map, array_values($this->sql));  //函数通过回调，产生一个新的数组，用于构建字符串
+        $this->sql=$this->sql_bak;
         return implode(array_values($ret), ' ');
     }
 
@@ -244,10 +255,15 @@ class orm
 $orm=new orm();
 //echo $orm->select(["news"=>"uid"],"uname","uage",["users"=>"uid"])->from([["news"=>"uid"],["users"=>"uid"]])
 //    ->from([["class"=>"classId"],["info"=>"pid"]])->orderby(['news'=>'id'],'desc')->limit(0,2);
-echo $orm->insert([
+echo $orm->insert(function(){
+    echo 'first callback<br />';
+},
+[
     ['id'=>123],
     ['name'=>'zhu']
-],'news');
+],'news',function(){
+    echo 'second callback<br />';
+});
 
 
 ?>
