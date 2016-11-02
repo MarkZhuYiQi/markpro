@@ -39,8 +39,50 @@ class orm
         'orderby'=>' order by ',
         'limit'=>' limit ',
         'groupby'=>' group by ',
-        'leftjoin'=>' left join '
+        'leftjoin'=>' left join ',
+        'insertinto'=>' insert into ',
+        'insertfields'=>'',
+        'values'=>' values '
     );
+    function __construct()
+    {
+        $this->sql_bak=$this->sql;
+    }
+
+    function insert()
+    {
+        $fields=[];
+        $fields_values=[];
+        $callback=[];
+        $field=func_get_args();
+        foreach($field as $params)
+        {
+            if(is_array($params))
+            {
+                foreach($params as $item)
+                {
+                    $fields[]=key($item);
+                    $fields_values[]=$item[key($item)];
+                }
+                $this->_add('insertfields', '('.implode($fields,',').')');
+                $this->_add('values', '('.implode($fields_values,',').')');
+            }
+            if(is_string($params))
+            {
+                $this->_add('insertinto',$params);
+            }
+            if(is_callable($params))
+            {
+                $callback[]=$params;
+            }
+        }
+        foreach($callback as $call)
+        {
+            $call();
+        }
+        return $this;
+    }
+
     function select()
     {
         $fields=func_get_args();
@@ -124,7 +166,9 @@ class orm
     // 实现字符串累加
     function _add($key,$str,$spliter=',')
     {
-        if(!$this->sql[$key])return;
+//        if(!$this->sql[$key])return;
+        //这种判断太粗暴了，需要判断数组
+        if(!array_key_exists($key,$this->sql))return;
         if(is_array($this->sql[$key]))
         {
             if(!in_array($str,$this->sql[$key][1]))
@@ -134,12 +178,12 @@ class orm
         }
         else
         {
-            if(preg_replace('/\s/','',$this->sql[$key]) != $key)
+            if(preg_replace('/\s/','',$this->sql[$key]) == $key || preg_replace('/\s/','',$this->sql[$key])=='')
             {
-                $this->sql[$key].=$spliter.$str;
+                $this->sql[$key].=$str;
             }
             else{
-                $this->sql[$key].=$str;
+                $this->sql[$key].=$spliter.$str;
             }
         }
     }
@@ -148,7 +192,12 @@ class orm
         // TODO: Implement __toString() method.
 
         $filter=function($value,$key){
-            if(!is_string($value))return true;
+//            if(!is_string($value))return true;        //这里只是粗暴的判断如果不是字符串就返回真，但是如果from里面是空的，依旧输出
+            if(is_array($value))        //首先判断数组里的键值是否为数组，如果是数组说明是form那种类型
+            {
+                if(count($value[1])>0)return true;
+                return false;
+            }
             if(preg_replace('/\s/','',$value)==$key)return false;
             return true;
         };
@@ -158,6 +207,7 @@ class orm
         global $map;
         $map=Closure::bind($map,$this,'orm');
         $ret=array_map($map,array_values($this->sql));
+        $this->sql=$this->sql_bak;
         return implode(array_values($ret));
     }
     function _aliastb($tb_name)
@@ -166,10 +216,11 @@ class orm
     }
 }
 $orm=new orm();
-//echo $orm->select('uname','upwd',['news'=>'uid'],['users'=>'uid'])->from([['news'=>'classId'],['users'=>'uid']])
-//    ->orderby('news','desc')->limit(0,2)->groupby(['class'=>'uid'],['users'=>'uid']);
-echo $orm->select(['users'=>'u_id'],['users'=>'u_name'],['news'=>'n_id'],['news'=>'n_name'])->from
-    ->leftjoin(['users'=>'u_id'],['news'=>'n_id']);
+echo $orm->select('uname','upwd',['news'=>'uid'],['users'=>'uid'])->from([['news'=>'classId'],['users'=>'uid']])
+    ->orderby('news','desc')->limit(0,2)->groupby(['class'=>'uid'],['users'=>'uid']);
+//echo $orm->select(['users'=>'u_id'],['users'=>'u_name'],['news'=>'n_id'],['news'=>'n_name'])->from
+//    ->leftjoin(['users'=>'u_id'],['news'=>'n_id']);
+echo $orm->insert([['name'=>'mark'],['age'=>26],['sex'=>'male']],'users',function(){echo 'first callback<br />';});
 ?>
 
 <script>
