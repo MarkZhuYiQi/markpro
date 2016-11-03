@@ -35,18 +35,64 @@ class orm
     public $sql=array(
         'select'=>'select ',
         'from'=>[' from ',[]],
-        'where'=>' where ',
         'orderby'=>' order by ',
         'limit'=>' limit ',
         'groupby'=>' group by ',
         'leftjoin'=>' left join ',
         'insertinto'=>' insert into ',
         'insertfields'=>'',
-        'values'=>' values '
+        'values'=>' values ',
+        'update'=>'update ',
+        'set'=>' set ',
+        'where'=>' where ',
     );
+    public $db=false;
+    public $errorCode='';
     function __construct()
     {
         $this->sql_bak=$this->sql;
+        try{
+            $this->db=new pdo('mysql:host=127.0.0.1;dbname=red','root','7777777y');
+        }catch(PDOException $e) {
+            print_r('error!'.$e->getMessage().'<br />');
+            die();
+        }
+    }
+    function _runExecAndCallBack($callback)
+    {
+        if(count($callback)>0)
+        {
+            $this->exec();
+            foreach($callback as $call)
+            {
+                $call=Closure::bind($call,$this,'orm');
+                $call();
+            }
+        }
+    }
+    function exec()
+    {
+        $sql=strval($this);
+        $stmt=$this->db->prepare($sql);
+        if(!$stmt->execute())
+        {
+            if($this->db->inTransaction())
+            {
+                $this->db->rollBack();
+            }
+            $this->errorCode=$stmt->errorCode();
+            echo 'Error while execute sql:'.$sql.'<br />'.'error code:'.$this->errorCode.'error message:'.$stmt->errorInfo()[2];
+        }
+        return $this;
+    }
+    function commit()
+    {
+        $this->db->commit();
+        return $this;
+    }
+    function getLastInsertId()
+    {
+        return $this->db->lastInsertId();
     }
 
     function insert()
@@ -54,15 +100,22 @@ class orm
         $fields=[];
         $fields_values=[];
         $callback=[];
-        $field=func_get_args();
-        foreach($field as $params)
+        $parameters=func_get_args();
+        foreach($parameters as $params)
         {
             if(is_array($params))
             {
                 foreach($params as $item)
                 {
-                    $fields[]=key($item);
-                    $fields_values[]=$item[key($item)];
+                    $field=key($item);
+                    $field_value=$item[$field];
+                    if(is_string($field_value))
+                    {
+                        $fields_values[]="'".$field_value."'";
+                    }else{
+                        $fields_values[]=$field_value;
+                    }
+                    $fields[]=$field;
                 }
                 $this->_add('insertfields', '('.implode($fields,',').')');
                 $this->_add('values', '('.implode($fields_values,',').')');
@@ -75,14 +128,37 @@ class orm
             {
                 $callback[]=$params;
             }
+            if(is_bool($params))
+            {
+                $this->db->beginTransaction();
+            }
         }
-        foreach($callback as $call)
+        $this->_runExecAndCallBack($callback);
+        return $this;
+    }
+    function update()
+    {
+        $keys=[];
+        $values=[];
+        $params=func_get_args();
+        foreach($params as $param)
         {
-            $call();
+            if(is_array($param))
+            {
+                foreach($param as $v)
+                {
+                    $key=key($v);
+                    $value=is_string($v[$key])?"'".$v[$key]."'":$v[$key];
+                    $this->_add('set',"`".$key."`=".$value);
+                }
+            }
+            if(is_string($param))
+            {
+                $this->_add(__FUNCTION__,'`'.$param.'`');
+            }
         }
         return $this;
     }
-
     function select()
     {
         $fields=func_get_args();
@@ -123,9 +199,41 @@ class orm
         }
         return $this;
     }
-    function where($str)
+    function where()
     {
-        $this->_add(__FUNCTION__,$str,' and ');
+        $parameters=func_get_args();
+        $callback=[];
+        foreach($parameters as $str){
+            if(is_array($str))
+            {
+                foreach($str as $params)
+                {
+                    $key=key($params);
+                    $value=$params[$key];
+                    if(is_string($value))
+                    {
+                        $this->_add(__FUNCTION__,"`".$key."`='".$value."'",' and ');
+                    }
+                    else
+                    {
+                        $this->_add(__FUNCTION__,"`".$key."`=".$value,' and ');
+                    }
+                }
+            }
+            if(is_string($str)){
+                $this->_add(__FUNCTION__,$str,' and ');
+            }
+            if(is_callable($str))
+            {
+                $callback[]=$str;
+            }
+            if(is_bool($str))
+            {
+                $this->db->beginTransaction();
+            }
+            $this->_runExecAndCallBack($callback);
+        }
+        return $this;
     }
     function orderby($str,$order='ASC')
     {
@@ -207,25 +315,57 @@ class orm
         global $map;
         $map=Closure::bind($map,$this,'orm');
         $ret=array_map($map,array_values($this->sql));
-        $this->sql=$this->sql_bak;
+        $this->_clearConfig();
         return implode(array_values($ret));
     }
     function _aliastb($tb_name)
     {
         return ' _'.$tb_name;
     }
+    function _clearConfig()
+    {
+        $this->sql=$this->sql_bak;
+    }
 }
 $orm=new orm();
-echo $orm->select('uname','upwd',['news'=>'uid'],['users'=>'uid'])->from([['news'=>'classId'],['users'=>'uid']])
-    ->orderby('news','desc')->limit(0,2)->groupby(['class'=>'uid'],['users'=>'uid']);
+//echo $orm->select('uname','upwd',['news'=>'uid'],['users'=>'uid'])->from([['news'=>'classId'],['users'=>'uid']])
+//    ->orderby('news','desc')->limit(0,2)->groupby(['class'=>'uid'],['users'=>'uid']);
 //echo $orm->select(['users'=>'u_id'],['users'=>'u_name'],['news'=>'n_id'],['news'=>'n_name'])->from
 //    ->leftjoin(['users'=>'u_id'],['news'=>'n_id']);
-echo $orm->insert([['name'=>'mark'],['age'=>26],['sex'=>'male']],'users',function(){echo 'first callback<br />';});
+
+/*$orm->insert([['user_name'=>'zhu']],'users',true,
+    function()
+    {
+        $userid=$this->getLastInsertId();
+        orm::insert([
+            ['user_id'=>intval($userid)],
+            ['log_type'=>'reg'],
+            ['log_date'=>time()]
+        ],'user_log',function() {
+            if ($this->errorCode == '')
+            {
+                $this->commit();
+                echo 'reg success';
+            }else{
+                echo 'failed!<br />';
+                exit();
+            }
+        });
+    });*/
+
+$orm->update([['log_type'=>'modify'],['user_id'=>99]],'user_log')->where([['log_id'=>9]],function(){
+    if($this->db->errorCode=='')
+    {
+        echo '1';
+    }else{
+        echo $this->db->errorCode;
+    }
+});
 ?>
 
 <script>
     var str=document.body.innerHTML;
-    var matches=str.match(/(where)|(insert)|(update)|(delete)|(select)|(limit)|(left\sjoin)|(group\sby)|(order\sby)/g);
+    var matches=str.match(/(where)|(insert)|(update)|(delete)|(select)|(limit)|(left\sjoin)|(group\sby)|(order\sby)|(set)/g);
     matches.forEach(function(item)
     {
         str=str.replace(item,"<span style='color:red'>"+item+"</span>");

@@ -273,7 +273,7 @@ class orm
     function exec()
     {
         //会自动调用__toString方法
-        $sql=$this->strval($this);
+        $sql=strval($this);
         $stmt=$this->db->prepare($sql);
         //如果返回false说明失败，失败就要做回滚
         if(!$stmt->execute())
@@ -301,6 +301,7 @@ class orm
     {
         if($this->db->inTransaction())
         {
+            echo 1;
             $this->db->commit();
         }
     }
@@ -309,7 +310,7 @@ class orm
 $orm=new orm();
 //echo $orm->select(["news"=>"uid"],"uname","uage",["users"=>"uid"])->from([["news"=>"uid"],["users"=>"uid"]])
 //    ->from([["class"=>"classId"],["info"=>"pid"]])->orderby(['news'=>'id'],'desc')->limit(0,2);
-$orm->insert(
+$orm->insert(true,
 [
     ['user_name'=>'zhu']
 ],'users',function(){
