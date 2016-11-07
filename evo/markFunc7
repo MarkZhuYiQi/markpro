@@ -1,0 +1,36 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: red
+ * Date: 11/7/16
+ * Time: 10:13 AM
+ */
+    function genConfig($content):string
+    {
+        $content=str_replace(SPACE,'',$content);
+        return file_put_contents(getcwd().'/mark.json',$content).' bytes are written'.PHP_EOL.'mark.json is created';
+    }
+    function loadConfig()
+    {
+        return json_decode(file_get_contents(getcwd().'/mark.json'));
+    }
+    function TC($content)
+    {
+        return new class($content){
+            function __construct($content)
+            {
+                foreach($content as $key=>$value)
+                {
+                    $this->$key=$value;
+                }
+            }
+            function __toString()
+            {
+                if(!defined(CSTRING))return json_encode($this);
+                if(CSTRING=='json')
+                {
+                    return json_encode($this);
+                }
+            }
+        };
+    }

@@ -1,0 +1,37 @@
+#!/usr/local/php/bin/php
+<?php
+    use core\markInit;
+    date_default_timezone_set('Asia/Shanghai');
+    $func=substr(PHP_VERSION,0,1)>=7?'markFunc7':'markFunc';
+    define('SPACE',['\r','\n','\r\n']);
+    define('CSTRING','json');
+    require($func);
+
+    function __autoload($className){
+        $className=str_replace('\\','/',$className);
+        if(file_exists(getcwd().'/'.$className))
+        {
+            require(getcwd().'/'.$className);
+        }
+    }
+
+    $result='';
+    if($argc>=2)
+    {
+        $param=isset($argv[1])?$argv[1]:'';
+        if(substr($param,0,1)=='-')
+        {
+            $param=substr($param,1);
+            $result=isset(markInit::$$param)?markInit::$$param:'Error!';
+        }
+        else
+        {
+            $result=markInit::$param();
+            if($param=='init')
+            {
+                $result=genConfig($result);
+            }
+        }
+    }
+    echo $result.PHP_EOL;
+
