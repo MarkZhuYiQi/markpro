@@ -40,6 +40,12 @@
                 return 'Error! Data Missing!';
             }
         }
+        static function c()
+        {
+            $get_config=loadConfig();
+            $mf=new mark_frame($get_config->prj_name);
+            $mf->compile();
+        }
         static function __callStatic($name, $arguments)
         {
             // TODO: Implement __callStatic() method.

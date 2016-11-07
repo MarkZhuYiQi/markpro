@@ -21,7 +21,7 @@
         }
         else
         {
-//            exit(markInit::$p());
+//            exit(markInit.php::$p());
             $result=markInit::$p();
             if($p=='init')
             {

@@ -100,6 +100,7 @@ class orm
         }
         if(count($callback)>0)
         {
+            $this->exec();
             foreach($callback as $call) //类似于异步，统一执行函数
             {
                 $call=Closure::bind($call,$this,'orm'); //将类对象和类作用域全都绑定到匿名函数$call中去，可以使用$this和orm：：

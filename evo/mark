@@ -9,9 +9,9 @@
 
     function __autoload($className){
         $className=str_replace('\\','/',$className);
-        if(file_exists(getcwd().'/'.$className))
+        if(file_exists(getcwd().'/'.$className.'.php'))
         {
-            require(getcwd().'/'.$className);
+            require(getcwd().'/'.$className.'.php');
         }
     }
 
