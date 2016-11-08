@@ -6,6 +6,15 @@
  */
 require('func.php');
 require('vars.php');
+
+$display=function($tpl,$vars=array())
+{
+    require('vars.php');
+    extract($vars);
+    include('page/'.$tpl.'.html');
+};
+
+
 if(isset($_SERVER['PATH_INFO']))
 {
     //获取path_info
@@ -21,19 +30,25 @@ if(isset($_SERVER['PATH_INFO']))
         if(preg_match("/".$cp."/",$p,$result))
         {
             $route_arr=$route[$path];
-            if($route_arr['RequestMethod']==$_SERVER['REQUEST_METHOD'])
-            {
-                $className=$route_arr['Class'];
-                $method=$route_arr['Method'];
-                $result=array_filter($result,'getMatch',ARRAY_FILTER_USE_KEY);
-                require('code/'.$className.'.class.php');
-                $res_obj=new ReflectionClass($className);
-                $getMethod=$res_obj->getMethod($method);
-                //执行一个方法，需要传入实例化对象，实例化对象也可以通过反射实现
-                $getMethod->invoke($res_obj->newInstance());
+            if($route_arr['RequestMethod']==$_SERVER['REQUEST_METHOD']) {
+                $className = $route_arr['Class'];
+                $method = $route_arr['Method'];
+                //这里头存放了带键名的数组
+                $result = array_filter($result, 'getMatch', ARRAY_FILTER_USE_KEY);
+                require('code/' . $className . '.class.php');
+                $res_obj = new ReflectionClass($className);
+                $getMethod = $res_obj->getMethod($method);
+                $class_obj = $res_obj->newInstance();
+                poster($getMethod,$result);
+                //强制让数组带上这个display，并且总是在最后一个
+                $result['display'] = $display;
+                $getMethod->invokeArgs($class_obj, $result);
+
             }
             else
             {
+                var_export($_SERVER['REQUEST_METHOD']);
+                var_export($route_arr['RequestMethod']);
                 exit('请求姿势不对！');
             }
         }
@@ -43,3 +58,5 @@ else
 {
     exit(404);
 }
+
+

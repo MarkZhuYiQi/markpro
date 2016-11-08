@@ -6,10 +6,28 @@ return array (
     'Class' => 'index',
     'Method' => 'default',
   ),
+  '/name' => 
+  array (
+    'RequestMethod' => 'GET',
+    'Class' => 'index',
+    'Method' => 'name',
+  ),
   '/getAbc' => 
   array (
     'RequestMethod' => 'POST',
     'Class' => 'index',
     'Method' => 'abc',
+  ),
+  '/login$' => 
+  array (
+    'RequestMethod' => 'GET',
+    'Class' => 'index',
+    'Method' => 'login',
+  ),
+  '/login_post$' => 
+  array (
+    'RequestMethod' => 'POST',
+    'Class' => 'index',
+    'Method' => 'login_post',
   ),
 );
