@@ -1,5 +1,6 @@
 <?php
     namespace core\frame;
+    use core\frame\mark_mvc;
     class mark_frame{
         public $project_folder='';
         public $project_main='';
@@ -28,7 +29,7 @@
             $_files=scandir($this->project_folder.'/code');
             foreach($_files as $_file)
             {
-                if(preg_match('/\w+\.(var|func)\.php$/i',$_file))
+                if(preg_match('/\w+\.(var|func|class)\.php$/i',$_file))
                 {
                     require($this->project_folder.'/code/'.$_file);
                 }
@@ -56,7 +57,20 @@
                 $content.=implode(array_slice($detail,$f->getStartLine()-1,$f->getEndLine()-$f->getStartLine()+1)).PHP_EOL;
             }
             file_put_contents($this->project_folder.'/func.php',$content);
+
+            $classes=get_declared_classes();
+            //获得了用户类
+            $classes=array_slice($classes,array_search(__CLASS__,$classes)+1);
+            $result=array();
+            foreach($classes as $class)
+            {
+                $mvc=new mark_mvc($class);
+                if($mvc->isController())
+                {
+                    $result=array_merge($result,$mvc->getRequestMapping());
+                }
+            }
+//            var_export($result);
+            file_put_contents($this->project_folder.'/request_route','<?php'.PHP_EOL.'return '.var_export($result,1).';');
         }
-
-
     }
