@@ -8,7 +8,16 @@ function poster($method,&$result)
 //    $params=file_get_contents('php://input');
     if($_SERVER['REQUEST_METHOD']=='POST')
     {
-        foreach($_POST as $key=>$value)
+        if($_SERVER['CONTENT_TYPE']=='application/json')
+        {
+            $get_obj=json_decode(file_get_contents("php://input"));
+            foreach($get_obj as $key=>$value)
+            {
+                if(isExistParam($key,$method))$result[$key]=$value;
+            }
+            return;
+        }
+        foreach($result as $key=>$value)
         {
             if(isExistParam($key,$method))$result[$key]=$value;
         }

@@ -28,15 +28,6 @@ class index
     {
         echo 'hello mark!'.PHP_EOL;
     }
-
-    /**
-     * @RequestMapping("/getAbc",Method=POST)
-     */
-    function abc()
-    {
-
-    }
-
     /**
      * @param $display
      * @RequestMapping("/login$",Method=GET)
@@ -60,5 +51,17 @@ class index
         $arr['userName']=$userName;
         $arr['password']=$password;
         $display('index',$arr);
+    }
+
+    /**
+     * @param $json
+     * @RequestMapping("/login_json$",Method=POST)
+     */
+    function login_json($userName,$password,$display){
+        $obj=new stdClass();
+        $obj->userName=$userName;
+        $obj->password=$password;
+        exit(json_encode($obj));
+
     }
 }

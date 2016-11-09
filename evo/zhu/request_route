@@ -30,4 +30,10 @@ return array (
     'Class' => 'index',
     'Method' => 'login_post',
   ),
+  '/login_json$' => 
+  array (
+    'RequestMethod' => 'POST',
+    'Class' => 'index',
+    'Method' => 'login_json',
+  ),
 );

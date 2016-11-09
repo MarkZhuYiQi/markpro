@@ -43,7 +43,6 @@ if(isset($_SERVER['PATH_INFO']))
                 //强制让数组带上这个display，并且总是在最后一个
                 $result['display'] = $display;
                 $getMethod->invokeArgs($class_obj, $result);
-
             }
             else
             {
